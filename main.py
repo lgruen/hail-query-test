@@ -6,14 +6,7 @@ OUTPUT_BUCKET = 'gs://leo-tmp-au/hail-query-test'
 CALL_RATE_PLOT = 'call_rate.svg'
 MEAN_SAMPLE_GQ_PLOT = 'mean_sample_gq.svg'
 
-# Results in "hail.utils.java.FatalError: IOException: No FileSystem for scheme: gs".
-# hl.init()
-
-hl.context.init_service(
-    billing_project='leonhardgruenschloss-trial',
-    bucket='gs://leo-tmp-au',
-    default_reference='GRCh38',
-)
+hl.init()
 
 mt = hl.read_matrix_table(GNOMAD_HGDP_1KG)
 mt_qc = hl.sample_qc(mt)
