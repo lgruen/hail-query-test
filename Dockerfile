@@ -3,6 +3,9 @@ FROM australia-southeast1-docker.pkg.dev/analysis-runner/images/driver:c84579d58
 # hailctl dataproc invokes gcloud beta dataproc, which isn't default-installed.
 RUN gcloud -q components install beta
 
+# Enable bokeh image exports.
+RUN conda install -c bokeh selenium
+
 ENV HAIL_QUERY_BACKEND service
 
 COPY main.py .
