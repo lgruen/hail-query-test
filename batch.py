@@ -1,28 +1,10 @@
 import uuid
 import hailtop.batch as hb
-import click
 
 IMAGE = 'australia-southeast1-docker.pkg.dev/leo-dev-290304/ar-sydney/query-test:latest'
 REGION = 'australia-southeast1'
 GCLOUD_AUTH = 'gcloud -q auth activate-service-account --key-file=/gsa-key/key.json'
 GCLOUD_PROJECT = 'gcloud config set project hail-295901'
-
-
-@click.command(help='Hail Query test')
-@click.option(
-    '--use-dataproc/--no-use-dataproc',
-    help='Whether to use a Dataproc cluster instead of the Query backend',
-)
-def main(use_dataproc=False):
-    backend = hb.ServiceBackend(
-        billing_project='leonhardgruenschloss-trial',
-        bucket='gs://leo-tmp-au',
-    )
-
-    batch = hb.Batch(backend=backend, name='query test')
-    sample_qc_job = add_query_script(batch, 'sample_qc.py', use_dataproc=True)
-    add_query_script(batch, 'plot.py', depends_on=sample_qc_job)
-    batch.run()
 
 
 def add_query_script(batch, script, *, use_dataproc=False, depends_on=None):
@@ -65,9 +47,17 @@ def add_query_script(batch, script, *, use_dataproc=False, depends_on=None):
     if depends_on:
         job.depends_on(depends_on)
     job.image(IMAGE)
-    job.command('python3 {script}')
+    job.command(f'python3 {script}')
     return job
 
 
 if __name__ == '__main__':
-    main()  # pylint: disable=no-value-for-parameter
+    backend = hb.ServiceBackend(
+        billing_project='leonhardgruenschloss-trial',
+        bucket='gs://leo-tmp-au',
+    )
+
+    batch = hb.Batch(backend=backend, name='query test')
+    sample_qc_job = add_query_script(batch, 'sample_qc.py', use_dataproc=True)
+    add_query_script(batch, 'plot.py', depends_on=sample_qc_job)
+    batch.run()

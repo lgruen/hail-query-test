@@ -1,12 +1,22 @@
+import os
 import hail as hl
 from bokeh.io import export_svgs
 
 OUTPUT_BUCKET = 'gs://leo-tmp-au/hail-query-test'
-SAMPLE_QC_MT = 'f{OUTPUT_BUCKET}/gnomad_hgdp_sample_qc.mt'
+SAMPLE_QC_MT = f'{OUTPUT_BUCKET}/gnomad_hgdp_sample_qc.mt'
 CALL_RATE_PLOT = 'call_rate.svg'
 MEAN_SAMPLE_GQ_PLOT = 'mean_sample_gq.svg'
 
-hl.init()
+print(f'HAIL_QUERY_BACKEND: {os.getenv("HAIL_QUERY_BACKEND")}')
+
+# TODO: Why isn't this sufficient when HAIL_QUERY_BACKEND is set?
+# hl.init()
+
+hl.context.init_service(
+    billing_project='leonhardgruenschloss-trial',
+    bucket='gs://leo-tmp-au',
+    default_reference='GRCh38',
+)
 
 mt = hl.read_matrix_table(SAMPLE_QC_MT)
 
