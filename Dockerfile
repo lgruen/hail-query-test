@@ -4,8 +4,8 @@ FROM australia-southeast1-docker.pkg.dev/analysis-runner/images/driver:c84579d58
 RUN gcloud -q components install beta
 
 # Enable bokeh image exports.
-RUN conda install -c bokeh selenium
+RUN conda install -c conda-forge bokeh selenium phantomjs && rm -r /root/miniconda3/pkgs
 
 ENV HAIL_QUERY_BACKEND service
 
-COPY main.py .
+COPY sample_qc.py plot.py ./

@@ -19,23 +19,26 @@ def main(use_dataproc=False):
         bucket='gs://leo-tmp-au',
     )
 
-    run_query_script(backend, 'main.py', use_dataproc)
+    batch = hb.Batch(backend=backend, name='query test')
+    sample_qc_job = add_query_script(batch, 'sample_qc.py', use_dataproc=True)
+    add_query_script(batch, 'plot.py', depends_on=sample_qc_job)
+    batch.run()
 
 
-def run_query_script(backend, filename, use_dataproc):
-    batch = hb.Batch(backend=backend, name=filename)
-
+def add_query_script(batch, script, *, use_dataproc=False, depends_on=None):
     if use_dataproc:
         cluster_name = f'dataproc-{uuid.uuid4().hex}'
 
         start_job = batch.new_job(name='start Dataproc cluster')
+        if depends_on:
+            start_job.depends_on(start_job)
         start_job.image(IMAGE)
         start_job.command(GCLOUD_AUTH)
         start_job.command(GCLOUD_PROJECT)
         start_job.command(
             f'hailctl dataproc start --max-age 8h --region {REGION} --service-account='
             f'$(gcloud config list account --format "value(core.account)") '
-            f'--packages selenium --num-preemptible-workers 20 '
+            f'--num-preemptible-workers 20 '
             f'{cluster_name}'
         )
 
@@ -45,7 +48,7 @@ def run_query_script(backend, filename, use_dataproc):
         main_job.command(GCLOUD_AUTH)
         main_job.command(GCLOUD_PROJECT)
         main_job.command(
-            f'hailctl dataproc submit --region {REGION} {cluster_name} {filename}'
+            f'hailctl dataproc submit --region {REGION} {cluster_name} {script}'
         )
 
         stop_job = batch.new_job(name='stop Dataproc cluster')
@@ -55,12 +58,15 @@ def run_query_script(backend, filename, use_dataproc):
         stop_job.command(GCLOUD_AUTH)
         stop_job.command(GCLOUD_PROJECT)
         stop_job.command(f'hailctl dataproc stop --region {REGION} {cluster_name}')
-    else:
-        job = batch.new_job(name='main')
-        job.image(IMAGE)
-        job.command('python3 {filename}')
 
-    batch.run()
+        return stop_job
+
+    job = batch.new_job(name='main')
+    if depends_on:
+        job.depends_on(depends_on)
+    job.image(IMAGE)
+    job.command('python3 {script}')
+    return job
 
 
 if __name__ == '__main__':
