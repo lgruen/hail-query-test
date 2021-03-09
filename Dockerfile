@@ -1,4 +1,7 @@
-FROM australia-southeast1-docker.pkg.dev/analysis-runner/images/driver:5e5fc1116836e996244b364ee291ca472b8b1938-hail-0.2.63.devaf814aa68ce8
+FROM australia-southeast1-docker.pkg.dev/analysis-runner/images/driver:c84579d581ea5be372d9d3673346d347f381a1be-hail-0.2.63.dev47eefe392051
+
+# hailctl dataproc invokes gcloud beta dataproc, which isn't default-installed.
+RUN gcloud -q components install beta
 
 ENV HAIL_QUERY_BACKEND service
 
