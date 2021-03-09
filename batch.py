@@ -35,7 +35,7 @@ def run_query_script(backend, filename, use_dataproc):
         start_job.command(
             f'hailctl dataproc start --max-age 8h --region {REGION} --service-account='
             f'$(gcloud config list account --format "value(core.account)") '
-            f'--num-preemptible-workers 20 '
+            f'--packages selenium --num-preemptible-workers 20 '
             f'{cluster_name}'
         )
 
