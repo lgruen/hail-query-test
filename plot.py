@@ -10,13 +10,15 @@ MEAN_SAMPLE_GQ_PLOT = 'mean_sample_gq.svg'
 print(f'HAIL_QUERY_BACKEND: {os.getenv("HAIL_QUERY_BACKEND")}')
 
 # TODO: Why isn't this sufficient when HAIL_QUERY_BACKEND is set?
-# hl.init()
+# hl.init(default_reference='GRCh38')
 
 hl.context.init_service(
     billing_project='leonhardgruenschloss-trial',
-    bucket='gs://leo-tmp-au',
+    bucket='leo-tmp-au',
     default_reference='GRCh38',
 )
+
+print(f'{SAMPLE_QC_MT} exists: {hl.hadoop_exists(SAMPLE_QC_MT)}')
 
 mt = hl.read_matrix_table(SAMPLE_QC_MT)
 

@@ -54,7 +54,7 @@ def add_query_script(batch, script, *, use_dataproc=False, depends_on=None):
 if __name__ == '__main__':
     backend = hb.ServiceBackend(
         billing_project='leonhardgruenschloss-trial',
-        bucket='gs://leo-tmp-au',
+        bucket='leo-tmp-au',
     )
 
     batch = hb.Batch(backend=backend, name='query test')
