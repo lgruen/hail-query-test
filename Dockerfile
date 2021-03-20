@@ -1,10 +1,3 @@
-FROM australia-southeast1-docker.pkg.dev/analysis-runner/images/driver:c84579d581ea5be372d9d3673346d347f381a1be-hail-0.2.63.dev47eefe392051
-
-# hailctl dataproc invokes gcloud beta dataproc, which isn't installed by default.
-RUN gcloud -q components install beta && \
-    # Enable bokeh image exports.
-    conda install -c conda-forge bokeh selenium phantomjs && rm -r /root/miniconda3/pkgs
-
-ENV HAIL_QUERY_BACKEND service
+FROM australia-southeast1-docker.pkg.dev/analysis-runner/images/driver:7f1a676f0b1e734981878576f6f091689e7d71c1-hail-0.2.64.dev201e81ff56c5
 
 COPY sample_qc.py plot.py ./

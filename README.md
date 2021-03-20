@@ -5,7 +5,7 @@ gcloud builds submit --tag australia-southeast1-docker.pkg.dev/leo-dev-290304/ar
 ```
 
 ```bash
-python3 main.py
+python3 batch.py
 ```
 
 For Dataproc cluster creation to work, the corresponding service account in Hail Batch needs the following roles:
