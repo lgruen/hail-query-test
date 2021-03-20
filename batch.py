@@ -13,7 +13,7 @@ def add_query_script(batch, script, *, use_dataproc=False, depends_on=None):
 
         start_job = batch.new_job(name='start Dataproc cluster')
         if depends_on:
-            start_job.depends_on(start_job)
+            start_job.depends_on(depends_on)
         start_job.image(IMAGE)
         start_job.command(GCLOUD_AUTH)
         start_job.command(GCLOUD_PROJECT)
@@ -58,6 +58,6 @@ if __name__ == '__main__':
     )
 
     batch = hb.Batch(backend=backend, name='query test')
-    sample_qc_job = None #add_query_script(batch, 'sample_qc.py', use_dataproc=True)
+    sample_qc_job = None  # add_query_script(batch, 'sample_qc.py', use_dataproc=True)
     add_query_script(batch, 'plot.py', depends_on=sample_qc_job)
     batch.run()
