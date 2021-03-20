@@ -13,7 +13,7 @@ mt = hl.read_matrix_table(SAMPLE_QC_MT)
 
 
 def plot_svg_to_gcs(plot, filename):
-    export_svgs(call_rate_plot, filename)
+    export_svgs(plot, filename)
     hl.hadoop_copy(filename, f'{OUTPUT_BUCKET}/{filename}')
 
 
